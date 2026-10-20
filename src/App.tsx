@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
 import { ARCHIVE_ITEMS } from './data/archiveItems';
 import { ArchiveItem, Category } from './types';
-import { Header } from './components/Header';
+import { Header, ViewMode } from './components/Header';
 import { HeroOrigin } from './components/HeroOrigin';
+import { ThreeArtifactViewer } from './components/ThreeArtifactViewer';
 import { ArchiveGrid } from './components/ArchiveGrid';
 import { SlotModal } from './components/SlotModal';
 import { Footer } from './components/Footer';
 import { BloodRain } from './components/BloodRain';
-import { AlertCircle, Flame } from 'lucide-react';
+import { AlertCircle, Flame, Sparkles } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [items] = useState<ArchiveItem[]>(ARCHIVE_ITEMS);
   const [currentCategory, setCurrentCategory] = useState<Category>('ALL');
   const [selectedItem, setSelectedItem] = useState<ArchiveItem | null>(null);
   const [isRainActive, setIsRainActive] = useState<boolean>(true);
+  const [viewMode, setViewMode] = useState<ViewMode>('CATALOGUE');
 
   // The origin reference item (Slot 00)
   const originItem = items.find((item) => item.id === 'BS-00') || items[0];
 
   // Grid items: either filtered by category or all remaining items
   const gridItems = items.filter((item) => {
-    // If category is ALL, we display the customizable slots in the grid (BS-01 to BS-07)
     if (currentCategory === 'ALL') {
       return item.id !== 'BS-00';
     }
@@ -41,6 +42,8 @@ export const App: React.FC = () => {
         pendingCount={pendingCount}
         isRainActive={isRainActive}
         onToggleRain={() => setIsRainActive((prev) => !prev)}
+        viewMode={viewMode}
+        onSelectViewMode={setViewMode}
       />
 
       {/* Main Archival Experience */}
@@ -59,27 +62,54 @@ export const App: React.FC = () => {
             </div>
             <div className="flex items-center space-x-2 text-[11px] text-neutral-400">
               <AlertCircle className="w-3.5 h-3.5 text-neutral-400" />
-              <span>Кликните на любую ячейку для просмотра параметров</span>
+              <span>3D-карточки с физикой наклона и звуковыми микро-эффектами</span>
             </div>
           </div>
         </div>
 
-        {/* Hero Section: Foundational Prototype (User's Reference) */}
-        {currentCategory === 'ALL' && (
-          <HeroOrigin
-            item={originItem}
-            onInspect={(item) => setSelectedItem(item)}
-          />
-        )}
+        {/* View Switcher: 3D Artifact Vault or Full Catalogue */}
+        {viewMode === '3D_ARTIFACT' ? (
+          <div className="animate-in fade-in duration-500">
+            <ThreeArtifactViewer />
+          </div>
+        ) : (
+          <>
+            {/* Hero Section: Foundational Prototype (User's Reference) */}
+            {currentCategory === 'ALL' && (
+              <HeroOrigin
+                item={originItem}
+                onInspect={(item) => setSelectedItem(item)}
+              />
+            )}
 
-        {/* The Archive Grid of Empty & Populated Cells */}
-        <ArchiveGrid
-          items={gridItems}
-          onSelectItem={(item) => setSelectedItem(item)}
-        />
+            {/* Embedded 3D Blade Relic Preview Bar */}
+            {currentCategory === 'ALL' && (
+              <div className="border-b border-hairline bg-obsidian-900/30 p-4">
+                <div className="max-w-7xl mx-auto flex justify-between items-center font-mono text-xs">
+                  <div className="flex items-center space-x-2 text-neutral-300">
+                    <Sparkles className="w-3.5 h-3.5 text-blood-500 animate-pulse" />
+                    <span>ИНТЕРАКТИВНЫЙ 3D АРТЕФАКТ: DAS BLUTIGE SCHWERT</span>
+                  </div>
+                  <button
+                    onClick={() => setViewMode('3D_ARTIFACT')}
+                    className="border border-blood-600/80 bg-blood-950/40 hover:bg-blood-700 hover:text-white text-blood-300 px-3 py-1 font-bold tracking-widest text-[10px] transition-all"
+                  >
+                    ОТКРЫТЬ 3D КАМЕРУ [360° WEBGL] →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* The Archive Grid of Empty & Populated Cells with 3D Tilt */}
+            <ArchiveGrid
+              items={gridItems}
+              onSelectItem={(item) => setSelectedItem(item)}
+            />
+          </>
+        )}
       </main>
 
-      {/* Detail Specimen Modal (Native Dialog with Light-Dismiss per modern web guidance) */}
+      {/* Detail Specimen Modal */}
       <SlotModal
         item={selectedItem}
         onClose={() => setSelectedItem(null)}
@@ -92,3 +122,4 @@ export const App: React.FC = () => {
 };
 
 export default App;
+

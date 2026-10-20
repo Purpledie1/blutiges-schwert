@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Volume2, VolumeX, Radio, ShieldAlert, Droplets } from 'lucide-react';
+import { Volume2, VolumeX, Radio, ShieldAlert, Droplets, Box, Layers } from 'lucide-react';
 import { Category } from '../types';
 import { ambientAudio } from '../utils/audio';
+import { sfx } from '../utils/sfx';
+
+export type ViewMode = 'CATALOGUE' | '3D_ARTIFACT';
 
 interface HeaderProps {
   currentCategory: Category;
@@ -9,6 +12,8 @@ interface HeaderProps {
   pendingCount: number;
   isRainActive: boolean;
   onToggleRain: () => void;
+  viewMode: ViewMode;
+  onSelectViewMode: (mode: ViewMode) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,12 +22,25 @@ export const Header: React.FC<HeaderProps> = ({
   pendingCount,
   isRainActive,
   onToggleRain,
+  viewMode,
+  onSelectViewMode,
 }) => {
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
   const toggleSound = () => {
+    sfx.playClick();
     const status = ambientAudio.toggle();
     setIsAudioPlaying(status);
+  };
+
+  const handleCategoryClick = (cat: Category) => {
+    sfx.playClick();
+    onSelectCategory(cat);
+  };
+
+  const handleModeClick = (mode: ViewMode) => {
+    sfx.playClick();
+    onSelectViewMode(mode);
   };
 
   const categories: { label: string; value: Category; code: string }[] = [
@@ -123,29 +141,62 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Helmut Lang Utilitarian Filter Bar */}
-      <div className="px-4 lg:px-8 overflow-x-auto scrollbar-none py-2.5 bg-obsidian-900/60 border-hairline-b flex items-center space-x-2">
-        <span className="text-[10px] font-mono text-neutral-400 mr-2 flex items-center">
-          <ShieldAlert className="w-3 h-3 mr-1 text-neutral-400" />
-          FILTER:
-        </span>
-        {categories.map((cat) => {
-          const isActive = currentCategory === cat.value;
-          return (
-            <button
-              key={cat.value}
-              onClick={() => onSelectCategory(cat.value)}
-              className={`px-3 py-1 font-mono text-xs whitespace-nowrap tracking-wider transition-all border ${
-                isActive
-                  ? 'bg-steel-100 text-obsidian-950 font-bold border-white shadow-[0_0_10px_rgba(255,255,255,0.2)]'
-                  : 'bg-obsidian-850/60 text-neutral-400 border-white/5 hover:border-neutral-500 hover:text-white'
-              }`}
-            >
-              <span className="text-[9px] mr-1.5 opacity-60">[{cat.code}]</span>
-              {cat.label}
-            </button>
-          );
-        })}
+      {/* Helmut Lang Utilitarian Filter Bar & View Mode Switcher */}
+      <div className="px-4 lg:px-8 overflow-x-auto scrollbar-none py-2.5 bg-obsidian-900/60 border-hairline-b flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center space-x-2">
+          <span className="text-[10px] font-mono text-neutral-400 mr-1 flex items-center">
+            <ShieldAlert className="w-3 h-3 mr-1 text-neutral-400" />
+            FILTER:
+          </span>
+          {categories.map((cat) => {
+            const isActive = currentCategory === cat.value && viewMode === 'CATALOGUE';
+            return (
+              <button
+                key={cat.value}
+                onClick={() => {
+                  if (viewMode !== 'CATALOGUE') onSelectViewMode('CATALOGUE');
+                  handleCategoryClick(cat.value);
+                }}
+                className={`px-3 py-1 font-mono text-xs whitespace-nowrap tracking-wider transition-all border ${
+                  isActive
+                    ? 'bg-steel-100 text-obsidian-950 font-bold border-white shadow-[0_0_10px_rgba(255,255,255,0.2)]'
+                    : 'bg-obsidian-850/60 text-neutral-400 border-white/5 hover:border-neutral-500 hover:text-white'
+                }`}
+              >
+                <span className="text-[9px] mr-1.5 opacity-60">[{cat.code}]</span>
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* View Mode Mode Toggles: Catalogue vs 3D Artifact */}
+        <div className="flex items-center space-x-1.5 font-mono text-xs">
+          <span className="text-[10px] text-neutral-500 mr-1 uppercase">PERSPECTIVE:</span>
+          <button
+            onClick={() => handleModeClick('CATALOGUE')}
+            className={`px-2.5 py-1 border flex items-center space-x-1 transition-all ${
+              viewMode === 'CATALOGUE'
+                ? 'bg-blood-900 text-white border-blood-500 font-bold'
+                : 'bg-obsidian-850 text-neutral-400 border-white/5 hover:text-white'
+            }`}
+          >
+            <Layers className="w-3 h-3" />
+            <span>CATALOGUE</span>
+          </button>
+
+          <button
+            onClick={() => handleModeClick('3D_ARTIFACT')}
+            className={`px-2.5 py-1 border flex items-center space-x-1 transition-all ${
+              viewMode === '3D_ARTIFACT'
+                ? 'bg-blood-700 text-white border-white font-bold shadow-[0_0_12px_rgba(220,38,38,0.5)]'
+                : 'bg-obsidian-850 text-neutral-400 border-white/5 hover:text-white'
+            }`}
+          >
+            <Box className="w-3 h-3 text-blood-400 animate-pulse" />
+            <span>3D VAULT (BLADE)</span>
+          </button>
+        </div>
       </div>
     </header>
   );
