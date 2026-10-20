@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Volume2, VolumeX, Radio, ShieldAlert } from 'lucide-react';
+import { Volume2, VolumeX, Radio, ShieldAlert, Droplets } from 'lucide-react';
 import { Category } from '../types';
 import { ambientAudio } from '../utils/audio';
 
@@ -7,12 +7,16 @@ interface HeaderProps {
   currentCategory: Category;
   onSelectCategory: (cat: Category) => void;
   pendingCount: number;
+  isRainActive: boolean;
+  onToggleRain: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentCategory,
   onSelectCategory,
   pendingCount,
+  isRainActive,
+  onToggleRain,
 }) => {
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
@@ -43,13 +47,27 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="hidden sm:inline text-neutral-400">LOCATION: 48°12'30"N 16°22'23"E (CATACOMB VAULT)</span>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-1.5">
             <span className="text-neutral-500">PENDING CONCEPTS:</span>
             <span className="text-blood-500 font-bold bg-blood-950/50 px-1.5 py-0.5 border border-blood-800/50">
               {pendingCount} SLOTS
             </span>
           </div>
+
+          {/* Blood Rain Atmospheric Toggle */}
+          <button
+            onClick={onToggleRain}
+            aria-label="Toggle atmospheric blood rain"
+            className={`flex items-center space-x-1.5 transition-colors px-2 py-0.5 border ${
+              isRainActive
+                ? 'bg-blood-950/80 text-blood-400 border-blood-700/80 shadow-[0_0_8px_rgba(220,38,38,0.4)]'
+                : 'bg-obsidian-850 text-neutral-500 border-white/10 hover:text-white'
+            }`}
+          >
+            <Droplets className={`w-3 h-3 ${isRainActive ? 'text-blood-500 animate-pulse' : 'text-neutral-500'}`} />
+            <span>RAIN: {isRainActive ? 'ACTIVE' : 'OFF'}</span>
+          </button>
 
           {/* Audio Drone Generator Toggle */}
           <button

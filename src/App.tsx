@@ -6,12 +6,14 @@ import { HeroOrigin } from './components/HeroOrigin';
 import { ArchiveGrid } from './components/ArchiveGrid';
 import { SlotModal } from './components/SlotModal';
 import { Footer } from './components/Footer';
+import { BloodRain } from './components/BloodRain';
 import { AlertCircle, Flame } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [items] = useState<ArchiveItem[]>(ARCHIVE_ITEMS);
   const [currentCategory, setCurrentCategory] = useState<Category>('ALL');
   const [selectedItem, setSelectedItem] = useState<ArchiveItem | null>(null);
+  const [isRainActive, setIsRainActive] = useState<boolean>(true);
 
   // The origin reference item (Slot 00)
   const originItem = items.find((item) => item.id === 'BS-00') || items[0];
@@ -28,12 +30,17 @@ export const App: React.FC = () => {
   const pendingCount = items.filter((item) => item.status === 'AWAITING_DESIGN').length;
 
   return (
-    <div className="min-h-screen bg-obsidian-950 text-steel-200 archive-grain flex flex-col font-sans selection:bg-blood-800 selection:text-white">
+    <div className="min-h-screen bg-obsidian-950 text-steel-200 archive-grain flex flex-col font-sans selection:bg-blood-800 selection:text-white relative">
+      {/* Niche Gothic Blood Rain Ambient Layer */}
+      <BloodRain enabled={isRainActive} />
+
       {/* Top Header & Navigation */}
       <Header
         currentCategory={currentCategory}
         onSelectCategory={setCurrentCategory}
         pendingCount={pendingCount}
+        isRainActive={isRainActive}
+        onToggleRain={() => setIsRainActive((prev) => !prev)}
       />
 
       {/* Main Archival Experience */}
