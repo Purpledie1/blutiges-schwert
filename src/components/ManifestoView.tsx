@@ -69,11 +69,11 @@ export const ManifestoView: React.FC = () => {
             <span className="col-span-3 text-right text-emerald-400 font-bold">ARCHIVED</span>
           </div>
 
-          <div className="p-3 grid grid-cols-12 text-neutral-300 items-center">
+          <div className="p-3 grid grid-cols-12 text-white items-center">
             <span className="col-span-2 text-blood-400 font-bold">HL-BS-01</span>
-            <span className="col-span-4">FLOOR-LENGTH COAT</span>
-            <span className="col-span-3 text-neutral-400">OUTERWEAR</span>
-            <span className="col-span-3 text-right text-blood-400 font-bold">AWAITING CONCEPT</span>
+            <span className="col-span-4 font-bold">DMC3 DANTE // WIDE FANG PANTS</span>
+            <span className="col-span-3 text-neutral-400">FULL ARCHIVE LOOK</span>
+            <span className="col-span-3 text-right text-emerald-400 font-bold">ARCHIVED</span>
           </div>
 
           <div className="p-3 grid grid-cols-12 text-neutral-300 items-center">

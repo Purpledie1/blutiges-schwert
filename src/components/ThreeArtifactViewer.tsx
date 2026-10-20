@@ -219,6 +219,13 @@ export const ThreeArtifactViewer: React.FC = () => {
       previousMousePosition = { x: e.clientX, y: e.clientY };
     };
 
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+    };
+
     const onMouseMove = (e: MouseEvent) => {
       // Update light tracking
       const rect = container.getBoundingClientRect();
@@ -239,14 +246,38 @@ export const ThreeArtifactViewer: React.FC = () => {
       previousMousePosition = { x: e.clientX, y: e.clientY };
     };
 
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      if (e.cancelable) e.preventDefault(); // Prevent accidental scroll when dragging 3D object
+
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - previousMousePosition.x;
+      const deltaY = touch.clientY - previousMousePosition.y;
+
+      targetRotationY += deltaX * 0.014;
+      targetRotationX += deltaY * 0.014;
+      targetRotationX = Math.max(-Math.PI / 4, Math.min(Math.PI / 4, targetRotationX));
+
+      previousMousePosition = { x: touch.clientX, y: touch.clientY };
+    };
+
     const onMouseUp = () => {
       isDragging = false;
     };
 
+    const onTouchEnd = () => {
+      isDragging = false;
+    };
+
     const domElement = renderer.domElement;
+    domElement.style.touchAction = 'none'; // Essential for touch drag in WebGL
     domElement.addEventListener('mousedown', onMouseDown);
+    domElement.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
     window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('touchend', onTouchEnd);
+    window.addEventListener('touchcancel', onTouchEnd);
 
     // Responsive Resize Listener
     const onResize = () => {
@@ -307,8 +338,12 @@ export const ThreeArtifactViewer: React.FC = () => {
     return () => {
       cancelAnimationFrame(animationId);
       domElement.removeEventListener('mousedown', onMouseDown);
+      domElement.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
       window.removeEventListener('resize', onResize);
 
       geometries.forEach((g) => g.dispose());
@@ -381,7 +416,7 @@ export const ThreeArtifactViewer: React.FC = () => {
       </div>
 
       {/* 3D Canvas Container */}
-      <div className="relative w-full h-[460px] sm:h-[540px] flex items-center justify-center cursor-grab active:cursor-grabbing select-none">
+      <div className="relative w-full h-[380px] sm:h-[500px] flex items-center justify-center cursor-grab active:cursor-grabbing select-none">
         {/* Canvas DOM Target */}
         <div ref={mountRef} className="w-full h-full" />
 

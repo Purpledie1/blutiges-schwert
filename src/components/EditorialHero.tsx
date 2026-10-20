@@ -21,20 +21,19 @@ export const EditorialHero: React.FC<EditorialHeroProps> = ({ originItem, onInsp
         </span>
       </div>
 
-      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-10 relative z-10">
+      <div className="max-w-7xl mx-auto p-3 sm:p-6 lg:p-10 relative z-10">
         {/* Top Specimen Code Banner */}
-        <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-3 mb-8 text-[11px] text-neutral-400 gap-3">
-          <div className="flex items-center space-x-3">
-            <span className="bg-blood-900/80 text-white font-bold px-2 py-0.5 border border-blood-500 uppercase text-[9px] tracking-widest">
-              CAPSULE PROTOTYPE ZERO
+        <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-3 mb-6 sm:mb-8 text-[10px] sm:text-[11px] text-neutral-400 gap-2">
+          <div className="flex items-center space-x-2 sm:space-x-3 overflow-hidden text-ellipsis whitespace-nowrap">
+            <span className="bg-blood-900/80 text-white font-bold px-1.5 sm:px-2 py-0.5 border border-blood-500 uppercase text-[9px] tracking-widest shrink-0">
+              PROTOTYPE 00
             </span>
-            <span className="text-white font-bold">{originItem.code}</span>
-            <span className="text-white/20">//</span>
+            <span className="text-white font-bold truncate">{originItem.code}</span>
+            <span className="text-white/20 hidden xs:inline">//</span>
             <span className="text-neutral-400 hidden sm:inline">ORIGIN: CATACOMB GUARDIAN</span>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <span className="text-neutral-400 text-[10px]">STAGE MODE:</span>
+          <div className="flex items-center space-x-1.5 shrink-0">
             <button
               onClick={() => {
                 sfx.playClick();
@@ -47,7 +46,7 @@ export const EditorialHero: React.FC<EditorialHeroProps> = ({ originItem, onInsp
               }`}
             >
               <ImageIcon className="w-3 h-3" />
-              <span>PHOTO ARCHIVE</span>
+              <span>PHOTO</span>
             </button>
 
             <button
@@ -62,7 +61,7 @@ export const EditorialHero: React.FC<EditorialHeroProps> = ({ originItem, onInsp
               }`}
             >
               <Box className="w-3 h-3 text-blood-400" />
-              <span>3D BLADE MODEL</span>
+              <span>3D BLADE</span>
             </button>
           </div>
         </div>

@@ -76,29 +76,28 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
 
   return (
     <div className="relative min-h-screen bg-obsidian-950 text-steel-200 font-mono flex flex-col selection:bg-blood-700 selection:text-white">
-      {/* TOP COMMAND STRIP (Zero Overlapping Text) */}
+      {/* TOP COMMAND STRIP (Zero Overlapping Text & Optimized for Mobile) */}
       <header className="sticky top-0 z-40 bg-obsidian-950/95 backdrop-blur-md border-b border-white/10">
         {/* Upper Micro Telemetry Bar */}
-        <div className="border-b border-white/5 px-4 py-1.5 flex flex-wrap justify-between items-center text-[10px] text-neutral-400 gap-2">
+        <div className="border-b border-white/5 px-3 sm:px-4 py-1.5 flex flex-wrap justify-between items-center text-[10px] text-neutral-400 gap-2">
           {/* Left Telemetry */}
-          <div className="flex items-center space-x-3 overflow-hidden text-ellipsis whitespace-nowrap">
+          <div className="flex items-center space-x-2 overflow-hidden text-ellipsis whitespace-nowrap">
             <span className="flex items-center text-blood-500 font-bold">
-              <span className="w-1.5 h-1.5 rounded-full bg-blood-500 animate-ping mr-1.5"></span>
-              SYS: CATACOMB VAULT
+              <span className="w-1.5 h-1.5 rounded-full bg-blood-500 animate-ping mr-1"></span>
+              SYS: ONLINE
             </span>
             <span className="text-white/20">/</span>
-            <span className="hidden sm:inline text-neutral-400">
-              FRAME_NW // 48.2082°N 16.3738°E
+            <span className="text-neutral-400 text-[9px] sm:text-[10px]">
+              CATACOMB_VAULT
             </span>
           </div>
 
           {/* Right Controls: Rain Sound Slider & Visual Rain */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Vacant counter badge */}
             <div className="flex items-center space-x-1">
-              <span className="text-neutral-500 hidden xs:inline">VACANT:</span>
               <span className="text-blood-400 font-bold bg-blood-950/60 border border-blood-800/40 px-1.5 py-0.5 text-[9px]">
-                {pendingCount} SLOTS
+                {pendingCount} VACANT
               </span>
             </div>
 
@@ -109,21 +108,22 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
                 onToggleRain();
               }}
               title="Toggle Blood Rain Visual Particles"
-              className={`flex items-center space-x-1 px-2 py-0.5 border text-[9px] transition-colors ${
+              className={`flex items-center space-x-1 px-1.5 py-0.5 border text-[9px] transition-colors ${
                 isRainActive
                   ? 'border-blood-600 bg-blood-950/80 text-blood-300'
                   : 'border-white/10 bg-obsidian-900 text-neutral-400 hover:text-white'
               }`}
             >
               <Droplets className={`w-3 h-3 ${isRainActive ? 'text-blood-500 animate-pulse' : ''}`} />
-              <span>VISUAL RAIN: {isRainActive ? 'ON' : 'OFF'}</span>
+              <span className="hidden xs:inline">RAIN:</span>
+              <span>{isRainActive ? 'ON' : 'OFF'}</span>
             </button>
 
             {/* RAIN SOUND CONTROLLER WITH VOLUME SLIDER */}
-            <div className="flex items-center space-x-2 bg-obsidian-900/80 border border-white/10 px-2 py-0.5">
+            <div className="flex items-center space-x-1.5 bg-obsidian-900/80 border border-white/10 px-1.5 sm:px-2 py-0.5">
               <button
                 onClick={handleToggleRainSound}
-                className="hover:text-white transition-colors"
+                className="hover:text-white transition-colors p-0.5"
                 title={isRainSoundPlaying ? 'Mute Rain Sound' : 'Play Rain Sound'}
               >
                 {isRainSoundPlaying && rainVolume > 0 ? (
@@ -133,8 +133,7 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
                 )}
               </button>
 
-              <div className="flex items-center space-x-1.5">
-                <span className="text-[9px] text-neutral-400 hidden md:inline">RAIN AUDIO:</span>
+              <div className="flex items-center space-x-1">
                 <input
                   type="range"
                   min="0"
@@ -142,10 +141,10 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
                   step="0.02"
                   value={isRainSoundPlaying ? rainVolume : 0}
                   onChange={handleVolumeChange}
-                  className="w-16 sm:w-20 h-1 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-blood-500"
+                  className="w-14 sm:w-20 h-1 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-blood-500"
                   title="Rain Volume Slider"
                 />
-                <span className="text-[9px] text-neutral-300 w-7 text-right">
+                <span className="text-[9px] text-neutral-300 w-6 text-right">
                   {isRainSoundPlaying ? `${Math.round(rainVolume * 100)}%` : '0%'}
                 </span>
               </div>
@@ -153,65 +152,65 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
           </div>
         </div>
 
-        {/* Brand Banner with Winged Katana Logo & High-Fashion Mode Navigation */}
-        <div className="px-4 lg:px-8 py-3 sm:py-4 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/5">
-          <div className="flex items-center gap-4">
-            {/* Winged Katana Brand Crest (from User's reference) */}
-            <div className="w-12 h-12 sm:w-14 sm:h-14 border border-white/15 bg-black/80 flex items-center justify-center p-1 relative shadow-[0_0_15px_rgba(220,38,38,0.25)] group">
+        {/* Brand Banner with Winged Katana Logo & Mode Navigation */}
+        <div className="px-3 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row md:items-end justify-between gap-3 border-b border-white/5">
+          <div className="flex items-center gap-3">
+            {/* Winged Katana Brand Crest */}
+            <div className="w-10 h-10 sm:w-14 sm:h-14 border border-white/15 bg-black/80 flex items-center justify-center p-1 relative shadow-[0_0_15px_rgba(220,38,38,0.25)] shrink-0">
               <img
                 src="./media/winged-sword.png"
                 alt="Blutiges Schwert Crest"
-                className="w-full h-full object-contain filter contrast-125 brightness-110 group-hover:scale-110 transition-transform duration-300"
+                className="w-full h-full object-contain filter contrast-125 brightness-110"
               />
               <div className="absolute -top-1 -left-1 w-2 h-2 border-t border-l border-blood-500"></div>
               <div className="absolute -bottom-1 -right-1 w-2 h-2 border-b border-r border-blood-500"></div>
             </div>
 
             <div>
-              <div className="text-[9px] tracking-ultra text-blood-500 uppercase font-bold">
+              <div className="text-[8px] sm:text-[9px] tracking-widest text-blood-500 uppercase font-bold">
                 HIGH UTILITARIAN ATELIER // EST. MMXXVI
               </div>
-              <h1 className="font-gothic text-3xl sm:text-4xl lg:text-5xl tracking-tight text-white drop-shadow-[0_4px_16px_rgba(220,38,38,0.35)] leading-none">
+              <h1 className="font-gothic text-2xl sm:text-4xl lg:text-5xl tracking-tight text-white drop-shadow-[0_4px_16px_rgba(220,38,38,0.35)] leading-none">
                 Blutiges Schwert
               </h1>
             </div>
           </div>
 
           {/* Primary Viewport Tabs */}
-          <div className="flex items-center space-x-1.5 text-xs overflow-x-auto scrollbar-none">
+          <div className="flex items-center space-x-1.5 text-xs overflow-x-auto scrollbar-none pb-0.5">
             <button
               onClick={() => handleTabChange('MATRIX')}
-              className={`px-3 py-1.5 border flex items-center space-x-1.5 transition-all whitespace-nowrap ${
+              className={`px-2.5 sm:px-3 py-1.5 border flex items-center space-x-1.5 transition-all whitespace-nowrap text-[11px] sm:text-xs ${
                 activeTab === 'MATRIX'
                   ? 'bg-steel-100 text-obsidian-950 font-bold border-white shadow-[0_0_12px_rgba(255,255,255,0.2)]'
                   : 'bg-obsidian-900 text-neutral-400 border-white/10 hover:border-neutral-500 hover:text-white'
               }`}
             >
-              <Layers className="w-3.5 h-3.5" />
+              <Layers className="w-3.5 h-3.5 shrink-0" />
               <span>CATALOGUE MATRIX</span>
             </button>
 
             <button
               onClick={() => handleTabChange('3D_VAULT')}
-              className={`px-3 py-1.5 border flex items-center space-x-1.5 transition-all whitespace-nowrap ${
+              className={`px-2.5 sm:px-3 py-1.5 border flex items-center space-x-1.5 transition-all whitespace-nowrap text-[11px] sm:text-xs ${
                 activeTab === '3D_VAULT'
                   ? 'bg-blood-700 text-white font-bold border-blood-400 shadow-[0_0_15px_rgba(220,38,38,0.5)]'
                   : 'bg-obsidian-900 text-neutral-400 border-white/10 hover:border-neutral-500 hover:text-white'
               }`}
             >
-              <Box className="w-3.5 h-3.5 text-blood-400 animate-pulse" />
+              <Box className="w-3.5 h-3.5 text-blood-400 animate-pulse shrink-0" />
               <span>3D BLADE VAULT</span>
             </button>
 
             <button
               onClick={() => handleTabChange('MANIFESTO')}
-              className={`px-3 py-1.5 border flex items-center space-x-1.5 transition-all whitespace-nowrap ${
+              className={`px-2.5 sm:px-3 py-1.5 border flex items-center space-x-1.5 transition-all whitespace-nowrap text-[11px] sm:text-xs ${
                 activeTab === 'MANIFESTO'
                   ? 'bg-steel-100 text-obsidian-950 font-bold border-white'
                   : 'bg-obsidian-900 text-neutral-400 border-white/10 hover:border-neutral-500 hover:text-white'
               }`}
             >
-              <Terminal className="w-3.5 h-3.5" />
+              <Terminal className="w-3.5 h-3.5 shrink-0" />
               <span>MANIFESTO</span>
             </button>
           </div>
@@ -219,8 +218,8 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
 
         {/* Category Filter Strip (Only in Matrix view) */}
         {activeTab === 'MATRIX' && (
-          <div className="px-4 lg:px-8 py-2 bg-obsidian-900/60 overflow-x-auto scrollbar-none flex items-center space-x-2 text-xs">
-            <span className="text-[10px] text-neutral-400 mr-1 flex items-center">
+          <div className="px-3 sm:px-6 lg:px-8 py-2 bg-obsidian-900/60 overflow-x-auto scrollbar-none flex items-center space-x-2 text-xs">
+            <span className="text-[10px] text-neutral-400 mr-1 flex items-center shrink-0">
               <ShieldAlert className="w-3 h-3 mr-1 text-neutral-400" />
               FILTER:
             </span>
@@ -233,7 +232,7 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
                     sfx.playClick();
                     onSelectCategory(c.value);
                   }}
-                  className={`px-2.5 py-0.5 whitespace-nowrap border text-[11px] transition-all ${
+                  className={`px-2.5 py-1 whitespace-nowrap border text-[10px] sm:text-[11px] transition-all shrink-0 ${
                     isActive
                       ? 'bg-blood-900/80 text-white border-blood-500 font-bold'
                       : 'bg-obsidian-950 text-neutral-400 border-white/5 hover:text-white hover:border-white/20'
@@ -288,18 +287,18 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
         </main>
       </div>
 
-      {/* FLOATING ACTION PILL: "ЗАДАТЬ ИДЕЮ ОДЕЖДЫ" */}
-      <div className="fixed bottom-10 right-4 z-40">
+      {/* FLOATING ACTION PILL: "ЗАДАТЬ ИДЕЮ ОДЕЖДЫ" (Mobile Adaptive) */}
+      <div className="fixed bottom-3 right-3 sm:bottom-8 sm:right-6 z-40">
         <button
           onClick={() => {
             sfx.playDossierOpen();
             onOpenQuickPrompt();
           }}
-          className="group flex items-center space-x-2 bg-blood-700 hover:bg-blood-600 text-white border border-blood-400 px-4 py-2.5 shadow-[0_0_20px_rgba(220,38,38,0.6)] font-mono text-xs font-bold tracking-wider uppercase transition-all duration-300 hover:scale-105"
+          className="group flex items-center space-x-1.5 sm:space-x-2 bg-blood-700 hover:bg-blood-600 text-white border border-blood-400 px-3 py-2 sm:px-4 sm:py-2.5 shadow-[0_0_20px_rgba(220,38,38,0.6)] font-mono text-[11px] sm:text-xs font-bold tracking-wider uppercase transition-all duration-300 hover:scale-105"
         >
-          <Sparkles className="w-4 h-4 text-white animate-spin" />
-          <span>НАПОЛНИТЬ ЯЧЕЙКУ ИДЕЕЙ</span>
-          <span className="bg-black/60 px-1.5 py-0.5 text-[10px] text-blood-300 border border-white/10">
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white animate-spin shrink-0" />
+          <span>НАПОЛНИТЬ ЯЧЕЙКУ</span>
+          <span className="bg-black/60 px-1.5 py-0.5 text-[9px] sm:text-[10px] text-blood-300 border border-white/10">
             {pendingCount}
           </span>
         </button>

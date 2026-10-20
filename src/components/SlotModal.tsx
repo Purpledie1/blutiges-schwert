@@ -259,17 +259,17 @@ export const SlotModal: React.FC<SlotModalProps> = ({ item, onClose }) => {
         </div>
 
         {/* Modal Footer */}
-        <div className="border-t border-white/10 p-4 bg-obsidian-900 flex justify-between items-center font-mono text-xs">
-          <span className="text-neutral-500 text-[10px]">
+        <div className="border-t border-white/10 p-3 sm:p-4 bg-obsidian-900 flex flex-wrap justify-between items-center gap-2 font-mono text-xs">
+          <span className="text-neutral-500 text-[10px] truncate max-w-[200px] sm:max-w-none">
             BLUTIGES SCHWERT // CATACOMB PROTOCOL MMXXVI
           </span>
-          <form method="dialog">
+          <form method="dialog" className="ml-auto">
             <button
               type="submit"
               onClick={onClose}
-              className="bg-steel-100 hover:bg-white text-obsidian-950 px-4 py-2 font-bold uppercase tracking-widest text-[11px] transition-colors"
+              className="bg-steel-100 hover:bg-white text-obsidian-950 px-3 sm:px-4 py-1.5 sm:py-2 font-bold uppercase tracking-widest text-[10px] sm:text-[11px] transition-colors"
             >
-              CLOSE DOSSIER [ESC]
+              CLOSE [ESC]
             </button>
           </form>
         </div>
