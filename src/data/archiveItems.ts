@@ -27,7 +27,7 @@ export const ARCHIVE_ITEMS: ArchiveItem[] = [
     germanTitle: 'DANTE: DER SCHATTEN-REVENANT (KAPITEL 01)',
     category: 'OUTERWEAR',
     status: 'DOCUMENTED',
-    imageUrl: './media/slot01-character-render.jpg',
+    imageUrl: './media/dante-dmc3-outfit-v1.jpg',
     secondaryImageUrl: './media/outfit-specimen-01.png',
     season: 'AUTUMN-WINTER 2026 // CATACOMB SERIES',
     silhouette: 'DMC3 Dante In-Game Model in Oversized Fur Hood Parka & Shredded Fanged Flared Denim',
