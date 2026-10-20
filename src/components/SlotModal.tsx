@@ -9,7 +9,7 @@ interface SlotModalProps {
 
 export const SlotModal: React.FC<SlotModalProps> = ({ item, onClose }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [activeImage, setActiveImage] = React.useState<'PRIMARY' | 'SECONDARY'>('PRIMARY');
+  const [activeImage, setActiveImage] = React.useState<'PRIMARY' | 'SECONDARY' | 'PANTS'>('PRIMARY');
 
   useEffect(() => {
     setActiveImage('PRIMARY');
@@ -118,7 +118,7 @@ export const SlotModal: React.FC<SlotModalProps> = ({ item, onClose }) => {
             {/* Visual Column */}
             <div className="border border-white/10 bg-black/60 p-2 relative">
               {item.secondaryImageUrl && (
-                <div className="flex space-x-1.5 mb-2 font-mono text-[10px]">
+                <div className="flex flex-wrap gap-1.5 mb-2 font-mono text-[10px]">
                   <button
                     onClick={() => setActiveImage('PRIMARY')}
                     className={`px-2 py-0.5 border ${
@@ -127,7 +127,17 @@ export const SlotModal: React.FC<SlotModalProps> = ({ item, onClose }) => {
                         : 'bg-obsidian-900 text-neutral-400 border-white/10'
                     }`}
                   >
-                    3D CHARACTER LOOK
+                    3D DANTE LOOK
+                  </button>
+                  <button
+                    onClick={() => setActiveImage('PANTS')}
+                    className={`px-2 py-0.5 border ${
+                      activeImage === 'PANTS'
+                        ? 'bg-blood-700 text-white font-bold border-white shadow-[0_0_8px_rgba(220,38,38,0.5)]'
+                        : 'bg-obsidian-900 text-neutral-400 border-white/10'
+                    }`}
+                  >
+                    WIDE FANG PANTS
                   </button>
                   <button
                     onClick={() => setActiveImage('SECONDARY')}
@@ -137,7 +147,7 @@ export const SlotModal: React.FC<SlotModalProps> = ({ item, onClose }) => {
                         : 'bg-obsidian-900 text-neutral-400 border-white/10'
                     }`}
                   >
-                    GARMENT FLAT LAY
+                    OUTFIT COLLAGE
                   </button>
                 </div>
               )}
@@ -145,7 +155,13 @@ export const SlotModal: React.FC<SlotModalProps> = ({ item, onClose }) => {
               <div className="aspect-[3/4] overflow-hidden bg-obsidian-900 flex items-center justify-center">
                 {item.imageUrl ? (
                   <img
-                    src={activeImage === 'PRIMARY' ? item.imageUrl : item.secondaryImageUrl || item.imageUrl}
+                    src={
+                      activeImage === 'PRIMARY'
+                        ? item.imageUrl
+                        : activeImage === 'PANTS'
+                        ? './media/wide-fanged-pants.png'
+                        : item.secondaryImageUrl || item.imageUrl
+                    }
                     alt={item.title}
                     className="w-full h-full object-cover object-center"
                   />
