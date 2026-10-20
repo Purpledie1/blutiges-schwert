@@ -9,6 +9,11 @@ interface SlotModalProps {
 
 export const SlotModal: React.FC<SlotModalProps> = ({ item, onClose }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [activeImage, setActiveImage] = React.useState<'PRIMARY' | 'SECONDARY'>('PRIMARY');
+
+  useEffect(() => {
+    setActiveImage('PRIMARY');
+  }, [item]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -112,12 +117,37 @@ export const SlotModal: React.FC<SlotModalProps> = ({ item, onClose }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             {/* Visual Column */}
             <div className="border border-white/10 bg-black/60 p-2 relative">
+              {item.secondaryImageUrl && (
+                <div className="flex space-x-1.5 mb-2 font-mono text-[10px]">
+                  <button
+                    onClick={() => setActiveImage('PRIMARY')}
+                    className={`px-2 py-0.5 border ${
+                      activeImage === 'PRIMARY'
+                        ? 'bg-steel-100 text-obsidian-950 font-bold border-white'
+                        : 'bg-obsidian-900 text-neutral-400 border-white/10'
+                    }`}
+                  >
+                    3D CHARACTER LOOK
+                  </button>
+                  <button
+                    onClick={() => setActiveImage('SECONDARY')}
+                    className={`px-2 py-0.5 border ${
+                      activeImage === 'SECONDARY'
+                        ? 'bg-blood-900 text-white font-bold border-blood-500'
+                        : 'bg-obsidian-900 text-neutral-400 border-white/10'
+                    }`}
+                  >
+                    GARMENT FLAT LAY
+                  </button>
+                </div>
+              )}
+
               <div className="aspect-[3/4] overflow-hidden bg-obsidian-900 flex items-center justify-center">
                 {item.imageUrl ? (
                   <img
-                    src={item.imageUrl}
+                    src={activeImage === 'PRIMARY' ? item.imageUrl : item.secondaryImageUrl || item.imageUrl}
                     alt={item.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
                   />
                 ) : (
                   <div className="p-6 text-center space-y-3 font-mono">

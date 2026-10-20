@@ -1,7 +1,7 @@
-import React from 'react';
-import { Volume2, VolumeX, Droplets, Radio, Compass, Disc3, ShieldAlert, Sparkles, Box, Layers, Terminal } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Volume2, VolumeX, Droplets, Radio, Compass, Disc3, ShieldAlert, Sparkles, Box, Layers, Terminal, Sliders } from 'lucide-react';
 import { Category } from '../types';
-import { ambientAudio } from '../utils/audio';
+import { rainAudio } from '../utils/rainAudio';
 import { sfx } from '../utils/sfx';
 
 export type MainTab = 'MATRIX' | '3D_VAULT' | 'MANIFESTO';
@@ -29,12 +29,35 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
   onToggleRain,
   onOpenQuickPrompt,
 }) => {
-  const [isAudioPlaying, setIsAudioPlaying] = React.useState(false);
+  const [rainVolume, setRainVolume] = useState<number>(0.4);
+  const [isRainSoundPlaying, setIsRainSoundPlaying] = useState<boolean>(false);
 
-  const toggleSound = () => {
+  useEffect(() => {
+    // Sync rain sound state
+    rainAudio.setVolume(rainVolume);
+  }, [rainVolume]);
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setRainVolume(val);
+    rainAudio.setVolume(val);
+    if (val > 0) {
+      setIsRainSoundPlaying(true);
+    } else {
+      setIsRainSoundPlaying(false);
+    }
+  };
+
+  const handleToggleRainSound = () => {
     sfx.playClick();
-    const status = ambientAudio.toggle();
-    setIsAudioPlaying(status);
+    if (isRainSoundPlaying) {
+      rainAudio.stop();
+      setIsRainSoundPlaying(false);
+    } else {
+      if (rainVolume === 0) setRainVolume(0.4);
+      rainAudio.start();
+      setIsRainSoundPlaying(true);
+    }
   };
 
   const handleTabChange = (tab: MainTab) => {
@@ -53,105 +76,112 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
 
   return (
     <div className="relative min-h-screen bg-obsidian-950 text-steel-200 font-mono flex flex-col selection:bg-blood-700 selection:text-white">
-      {/* Precision Corner Crosshairs (Brutalist Architectural Framing) */}
-      <div className="fixed top-2 left-2 z-50 text-[9px] text-white/30 pointer-events-none select-none">
-        + [FRAME_NW // 48.2082°N]
-      </div>
-      <div className="fixed top-2 right-2 z-50 text-[9px] text-white/30 pointer-events-none select-none">
-        [FRAME_NE // 16.3738°E] +
-      </div>
-      <div className="fixed bottom-2 left-2 z-50 text-[9px] text-white/30 pointer-events-none select-none">
-        + [CATACOMB_SW // LVL_-07]
-      </div>
-      <div className="fixed bottom-2 right-2 z-50 text-[9px] text-white/30 pointer-events-none select-none">
-        [PROTOCOL_SE // VER_2.4] +
-      </div>
-
-      {/* TOP COMMAND STRIP */}
+      {/* TOP COMMAND STRIP (Zero Overlapping Text) */}
       <header className="sticky top-0 z-40 bg-obsidian-950/95 backdrop-blur-md border-b border-white/10">
         {/* Upper Micro Telemetry Bar */}
-        <div className="border-b border-white/5 px-3 py-1 flex flex-wrap justify-between items-center text-[10px] text-neutral-400">
-          <div className="flex items-center space-x-3">
+        <div className="border-b border-white/5 px-4 py-1.5 flex flex-wrap justify-between items-center text-[10px] text-neutral-400 gap-2">
+          {/* Left Telemetry */}
+          <div className="flex items-center space-x-3 overflow-hidden text-ellipsis whitespace-nowrap">
             <span className="flex items-center text-blood-500 font-bold">
               <span className="w-1.5 h-1.5 rounded-full bg-blood-500 animate-ping mr-1.5"></span>
-              SYS: CATACOMB VAULT ONLINE
+              SYS: CATACOMB VAULT
             </span>
             <span className="text-white/20">/</span>
-            <span className="hidden md:inline text-neutral-400">
-              TIME: {new Date().toISOString().slice(0, 10)} // AUTUMN-WINTER
+            <span className="hidden sm:inline text-neutral-400">
+              FRAME_NW // 48.2082°N 16.3738°E
             </span>
           </div>
 
-          <div className="flex items-center space-x-4">
-            {/* Quick Cell Counter */}
+          {/* Right Controls: Rain Sound Slider & Visual Rain */}
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            {/* Vacant counter badge */}
             <div className="flex items-center space-x-1">
-              <span className="text-neutral-400">VACANT:</span>
-              <span className="text-blood-400 font-bold bg-blood-950/60 border border-blood-800/40 px-1">
+              <span className="text-neutral-500 hidden xs:inline">VACANT:</span>
+              <span className="text-blood-400 font-bold bg-blood-950/60 border border-blood-800/40 px-1.5 py-0.5 text-[9px]">
                 {pendingCount} SLOTS
               </span>
             </div>
 
-            {/* Blood Rain Switch */}
+            {/* Visual Blood Rain Toggle */}
             <button
               onClick={() => {
                 sfx.playClick();
                 onToggleRain();
               }}
-              className={`flex items-center space-x-1 px-1.5 py-0.5 border text-[9px] transition-colors ${
+              title="Toggle Blood Rain Visual Particles"
+              className={`flex items-center space-x-1 px-2 py-0.5 border text-[9px] transition-colors ${
                 isRainActive
                   ? 'border-blood-600 bg-blood-950/80 text-blood-300'
                   : 'border-white/10 bg-obsidian-900 text-neutral-400 hover:text-white'
               }`}
             >
-              <Droplets className={`w-2.5 h-2.5 ${isRainActive ? 'text-blood-500 animate-pulse' : ''}`} />
-              <span>RAIN: {isRainActive ? 'ON' : 'OFF'}</span>
+              <Droplets className={`w-3 h-3 ${isRainActive ? 'text-blood-500 animate-pulse' : ''}`} />
+              <span>VISUAL RAIN: {isRainActive ? 'ON' : 'OFF'}</span>
             </button>
 
-            {/* Drone Audio Switch */}
-            <button
-              onClick={toggleSound}
-              className={`flex items-center space-x-1 px-1.5 py-0.5 border text-[9px] transition-colors ${
-                isAudioPlaying
-                  ? 'border-blood-600 bg-blood-950/80 text-blood-300'
-                  : 'border-white/10 bg-obsidian-900 text-neutral-400 hover:text-white'
-              }`}
-            >
-              {isAudioPlaying ? (
-                <>
-                  <Volume2 className="w-2.5 h-2.5 text-blood-500 animate-pulse" />
-                  <span>DRONE: ON</span>
-                </>
-              ) : (
-                <>
-                  <VolumeX className="w-2.5 h-2.5 text-neutral-400" />
-                  <span>DRONE: OFF</span>
-                </>
-              )}
-            </button>
+            {/* RAIN SOUND CONTROLLER WITH VOLUME SLIDER */}
+            <div className="flex items-center space-x-2 bg-obsidian-900/80 border border-white/10 px-2 py-0.5">
+              <button
+                onClick={handleToggleRainSound}
+                className="hover:text-white transition-colors"
+                title={isRainSoundPlaying ? 'Mute Rain Sound' : 'Play Rain Sound'}
+              >
+                {isRainSoundPlaying && rainVolume > 0 ? (
+                  <Volume2 className="w-3 h-3 text-blood-500 animate-pulse" />
+                ) : (
+                  <VolumeX className="w-3 h-3 text-neutral-500" />
+                )}
+              </button>
+
+              <div className="flex items-center space-x-1.5">
+                <span className="text-[9px] text-neutral-400 hidden md:inline">RAIN AUDIO:</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.02"
+                  value={isRainSoundPlaying ? rainVolume : 0}
+                  onChange={handleVolumeChange}
+                  className="w-16 sm:w-20 h-1 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-blood-500"
+                  title="Rain Volume Slider"
+                />
+                <span className="text-[9px] text-neutral-300 w-7 text-right">
+                  {isRainSoundPlaying ? `${Math.round(rainVolume * 100)}%` : '0%'}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Brand Banner & High-Fashion Mode Navigation */}
-        <div className="px-4 lg:px-8 py-4 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/5">
-          <div className="flex items-baseline gap-4">
+        {/* Brand Banner with Winged Katana Logo & High-Fashion Mode Navigation */}
+        <div className="px-4 lg:px-8 py-3 sm:py-4 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/5">
+          <div className="flex items-center gap-4">
+            {/* Winged Katana Brand Crest (from User's reference) */}
+            <div className="w-12 h-12 sm:w-14 sm:h-14 border border-white/15 bg-black/80 flex items-center justify-center p-1 relative shadow-[0_0_15px_rgba(220,38,38,0.25)] group">
+              <img
+                src="./media/winged-sword.png"
+                alt="Blutiges Schwert Crest"
+                className="w-full h-full object-contain filter contrast-125 brightness-110 group-hover:scale-110 transition-transform duration-300"
+              />
+              <div className="absolute -top-1 -left-1 w-2 h-2 border-t border-l border-blood-500"></div>
+              <div className="absolute -bottom-1 -right-1 w-2 h-2 border-b border-r border-blood-500"></div>
+            </div>
+
             <div>
               <div className="text-[9px] tracking-ultra text-blood-500 uppercase font-bold">
-                HIGH UTILITARIAN ATELIER
+                HIGH UTILITARIAN ATELIER // EST. MMXXVI
               </div>
-              <h1 className="font-gothic text-3xl sm:text-4xl lg:text-5xl tracking-tight text-white drop-shadow-[0_4px_16px_rgba(220,38,38,0.35)]">
+              <h1 className="font-gothic text-3xl sm:text-4xl lg:text-5xl tracking-tight text-white drop-shadow-[0_4px_16px_rgba(220,38,38,0.35)] leading-none">
                 Blutiges Schwert
               </h1>
             </div>
-            <span className="font-mono text-[10px] text-neutral-400 border border-white/10 px-1.5 py-0.5 hidden sm:inline">
-              ARCHIVE_MMXXVI
-            </span>
           </div>
 
           {/* Primary Viewport Tabs */}
-          <div className="flex items-center space-x-1 text-xs">
+          <div className="flex items-center space-x-1.5 text-xs overflow-x-auto scrollbar-none">
             <button
               onClick={() => handleTabChange('MATRIX')}
-              className={`px-3 py-1.5 border flex items-center space-x-1.5 transition-all ${
+              className={`px-3 py-1.5 border flex items-center space-x-1.5 transition-all whitespace-nowrap ${
                 activeTab === 'MATRIX'
                   ? 'bg-steel-100 text-obsidian-950 font-bold border-white shadow-[0_0_12px_rgba(255,255,255,0.2)]'
                   : 'bg-obsidian-900 text-neutral-400 border-white/10 hover:border-neutral-500 hover:text-white'
@@ -163,7 +193,7 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
 
             <button
               onClick={() => handleTabChange('3D_VAULT')}
-              className={`px-3 py-1.5 border flex items-center space-x-1.5 transition-all ${
+              className={`px-3 py-1.5 border flex items-center space-x-1.5 transition-all whitespace-nowrap ${
                 activeTab === '3D_VAULT'
                   ? 'bg-blood-700 text-white font-bold border-blood-400 shadow-[0_0_15px_rgba(220,38,38,0.5)]'
                   : 'bg-obsidian-900 text-neutral-400 border-white/10 hover:border-neutral-500 hover:text-white'
@@ -175,7 +205,7 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
 
             <button
               onClick={() => handleTabChange('MANIFESTO')}
-              className={`px-3 py-1.5 border flex items-center space-x-1.5 transition-all ${
+              className={`px-3 py-1.5 border flex items-center space-x-1.5 transition-all whitespace-nowrap ${
                 activeTab === 'MANIFESTO'
                   ? 'bg-steel-100 text-obsidian-950 font-bold border-white'
                   : 'bg-obsidian-900 text-neutral-400 border-white/10 hover:border-neutral-500 hover:text-white'
@@ -187,7 +217,7 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
           </div>
         </div>
 
-        {/* Secondary Category Filter Strip (Only in Matrix view) */}
+        {/* Category Filter Strip (Only in Matrix view) */}
         {activeTab === 'MATRIX' && (
           <div className="px-4 lg:px-8 py-2 bg-obsidian-900/60 overflow-x-auto scrollbar-none flex items-center space-x-2 text-xs">
             <span className="text-[10px] text-neutral-400 mr-1 flex items-center">
@@ -218,9 +248,9 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
         )}
       </header>
 
-      {/* MAIN VIEWPORT WRAPPER (Split Layout with Left Navigation Spine) */}
+      {/* MAIN VIEWPORT WRAPPER */}
       <div className="flex-grow flex flex-col md:flex-row relative">
-        {/* Left Architectural Spine / Vertical Rail */}
+        {/* Left Vertical Index Rail */}
         <aside className="w-full md:w-16 md:min-w-[4rem] border-r border-b md:border-b-0 border-white/10 bg-obsidian-950 flex md:flex-col justify-between items-center p-3 text-[10px] text-neutral-400 select-none z-30">
           <div className="hidden md:flex flex-col items-center space-y-6 pt-4">
             <span className="w-2 h-2 rounded-full bg-blood-500 animate-pulse"></span>
@@ -229,17 +259,17 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
             </div>
           </div>
 
-          {/* Quick Slot Index Status (Slots 00..07) */}
+          {/* Quick Slot Index Status */}
           <div className="flex md:flex-col gap-1.5 overflow-x-auto py-1">
             {['00', '01', '02', '03', '04', '05', '06', '07'].map((num) => (
               <span
                 key={num}
                 className={`w-6 h-6 flex items-center justify-center border text-[9px] font-bold ${
-                  num === '00'
+                  num === '00' || num === '01'
                     ? 'border-emerald-700/80 bg-emerald-950/40 text-emerald-400'
                     : 'border-blood-800/80 bg-blood-950/40 text-blood-400'
                 }`}
-                title={num === '00' ? 'Origin Specimen' : `Vacant Slot ${num}`}
+                title={num === '00' ? 'Origin Specimen' : num === '01' ? 'Archived Specimen 01' : `Vacant Slot ${num}`}
               >
                 {num}
               </span>
@@ -275,7 +305,7 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
         </button>
       </div>
 
-      {/* FOOTER TICKER / ARCHIVAL SPECS */}
+      {/* FOOTER TICKER */}
       <footer className="border-t border-white/10 bg-obsidian-950 px-4 py-3 flex flex-col sm:flex-row justify-between items-center text-[10px] text-neutral-400 z-30 gap-2">
         <div className="flex items-center space-x-4">
           <span className="text-white font-bold">BLUTIGES SCHWERT ATELIER</span>
@@ -283,12 +313,12 @@ export const ShellFrame: React.FC<ShellFrameProps> = ({
           <span className="text-blood-400">HELMUT LANG DISCIPLINE × ARCHIVE-CORE</span>
           <span className="hidden lg:inline text-white/20">|</span>
           <span className="hidden lg:inline text-neutral-400">
-            WEBGL THREE.JS V174 // REACT 19 // TAILWIND
+            WEB AUDIO RAIN ENGINE // THREE.JS 3D
           </span>
         </div>
 
         <div className="flex items-center space-x-3 text-neutral-400">
-          <span>GITHUB PAGES DEPLOYED</span>
+          <span>GITHUB PAGES VERIFIED</span>
           <span>© 2026 PURPLE DIE 1</span>
         </div>
       </footer>

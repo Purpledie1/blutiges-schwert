@@ -11,6 +11,7 @@ export interface ArchiveItem {
   category: Category;
   status: SlotStatus;
   imageUrl?: string;
+  secondaryImageUrl?: string;
   season: string;
   silhouette: string;
   materials: string[];
